@@ -1,3 +1,19 @@
+################################################################################
+##
+# @file model_consultation.py
+# @brief Modèle SQLAlchemy pour la table CONSULTATION
+#
+# @details
+# Définit la classe Consultation et ses relations vers
+# Patient, Medecin et Prescription.
+#
+# **Projet:** Projet SGBD - Centre Médical
+# **Formation:** Polytech Tours
+# **Auteur:** Leo NOUHOUANG
+# **Date:** Mai 2026
+#
+################################################################################
+
 # Importation de la base déclarative partagée
 from base import Base
 

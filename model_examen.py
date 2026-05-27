@@ -1,3 +1,19 @@
+################################################################################
+##
+# @file model_examen.py
+# @brief Modèle SQLAlchemy pour la table EXAMEN
+#
+# @details
+# Définit la classe Examen et sa relation vers Patient.
+# Un examen est toujours associé à un patient.
+#
+# **Projet:** Projet SGBD - Centre Médical
+# **Formation:** Polytech Tours
+# **Auteur:** Leo NOUHOUANG
+# **Date:** Mai 2026
+#
+################################################################################
+
 # Importation de la base déclarative partagée
 from base import Base
 

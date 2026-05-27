@@ -1,13 +1,34 @@
-# Importation de la base déclarative, du moteur et de la session définis dans base.py
+################################################################################
+##
+# @file insert.py
+# @brief Génération et insertion des données dans la base de données
+#
+# @details
+# Ce module génère des données fictives à l'aide de la librairie Faker
+# et les insère dans la base de données SQLite du centre médical.
+# Les insertions sont vérifiées après chaque bloc via des assertions.
+#
+# **Projet:** Projet SGBD - Centre Médical
+# **Formation:** Polytech Tours
+# **Auteur:** Leo NOUHOUANG
+# **Date:** Mai 2026
+#
+# @section order_sec Ordre d'insertion
+# 1. Etablissements
+# 2. Médecins
+# 3. Patients
+# 4. Associations médecin ↔ établissement
+# 5. Consultations
+# 6. Prescriptions
+# 7. Rendez-vous
+# 8. Examens
+# 9. Factures
+# 10. Utilisateurs
+#
+################################################################################
+
 from base import Base, engine, session
-# Importation de Faker pour générer des données fictives cohérentes
-from faker import Faker
-import random
 
-fake = Faker("fr_FR")
-
-
-# Import de chaque modèle pour que SQLAlchemy les enregistre
 from model_etablissement import Etablissement
 from model_medecin import Medecin
 from model_patient import Patient
@@ -19,149 +40,169 @@ from model_examen import Examen
 from model_facture import Facture
 from model_utilisateur import Utilisateur
 
+from faker import Faker
+import random
+
+# Initialisation du générateur Faker avec la locale française
+fake = Faker("fr_FR")
+
+# Graine fixe pour garantir la reproductibilité des données générées
+random.seed(42)
+Faker.seed(42)
 
 # Création des tables si elles n'existent pas encore
 Base.metadata.create_all(engine)
 
-# Définition d'une graine aléatoire pour obtenir des résultats reproductibles
-random.seed(42)
-Faker.seed(42)
-
-# Vérification préalable : on évite de réinsérer les données si la base contient déjà des patients
+# Vérification préalable : on évite de réinsérer si la base contient déjà des données
 if session.query(Patient).first() is not None:
-    print("La base contient déjà des données. Suppression ou nouvelle base recommandée avant réinsertion.")
+    print("La base contient déjà des données. Supprimez centre_medical.db avant de relancer.")
     session.close()
     raise SystemExit
 
-# ================================================================================
-# 1. Génération des établissements
-# ================================================================================
+################################################################################
+# 1. ETABLISSEMENTS
+################################################################################
 
-# Liste des types d'établissements possibles
-types_etablissement = ["Clinique", "Antenne", "Cabinet", "Hôpital"]
+# Types d'établissements possibles
+liste_types_etablissement = ["Clinique", "Antenne", "Cabinet", "Hôpital"]
 
-etablissements = []
+liste_etablissements = []
 
-# Boucle de création de 5 établissements
 for _ in range(5):
-    # Instanciation d'un établissement avec des données générées aléatoirement
-    e = Etablissement(
+    o_etablissement = Etablissement(
         nom=fake.company(),
-        type=random.choice(types_etablissement),
+        type=random.choice(liste_types_etablissement),
         adresse=fake.address(),
         telephone=fake.phone_number(),
     )
-    etablissements.append(e)
+    liste_etablissements.append(o_etablissement)
 
-# Ajout groupé des établissements dans la session
-session.add_all(etablissements)
+session.add_all(liste_etablissements)
 session.commit()
 
-# ================================================================================
-# 2. Génération des médecins
-# ================================================================================
+# Vérification en base
+i_nb = session.query(Etablissement).count()
+assert i_nb == len(liste_etablissements), f"[ECHEC] Etablissements : attendu {len(liste_etablissements)}, trouvé {i_nb}"
+print(f"[OK] Etablissements insérés : {i_nb}")
 
-# Liste des spécialités médicales disponibles
-specialites = [
+################################################################################
+# 2. MEDECINS
+################################################################################
+
+# Spécialités médicales disponibles
+liste_specialites = [
     "Généraliste", "Cardiologue", "Dermatologue", "Pédiatre", "Neurologue",
     "Ophtalmologue", "Gynécologue", "Orthopédiste", "Psychiatre", "Radiologue"
 ]
 
-medecins = []
+liste_medecins = []
 
-# Boucle de création de 20 médecins
 for _ in range(20):
-    # Instanciation d'un médecin avec des données générées aléatoirement
-    m = Medecin(
+    o_medecin = Medecin(
         nom=fake.last_name(),
         prenom=fake.first_name(),
-        specialite=random.choice(specialites),
+        specialite=random.choice(liste_specialites),
         email=fake.unique.email(),
     )
-    medecins.append(m)
+    liste_medecins.append(o_medecin)
 
-# Ajout groupé des médecins dans la session
-session.add_all(medecins)
+session.add_all(liste_medecins)
 session.commit()
 
-# ================================================================================
-# 3. Génération des patients
-# ================================================================================
+# Vérification en base
+i_nb = session.query(Medecin).count()
+assert i_nb == len(liste_medecins), f"[ECHEC] Medecins : attendu {len(liste_medecins)}, trouvé {i_nb}"
+print(f"[OK] Médecins insérés : {i_nb}")
 
-# Initialisation de la liste locale des patients
-patients = []
+################################################################################
+# 3. PATIENTS
+################################################################################
 
-# Boucle de création de 200 patients
+liste_patients = []
+
 for _ in range(200):
-    # Génération d'un numéro de sécurité sociale unique sur 13 chiffres
-    numero_secu = str(fake.unique.random_number(digits=13, fix_len=True))
-    # Instanciation d'un patient avec des données générées aléatoirement
-    p = Patient(
+    # Numéro de sécurité sociale unique à 13 chiffres
+    s_numero_secu = str(fake.unique.random_number(digits=13, fix_len=True))
+    o_patient = Patient(
         nom=fake.last_name(),
         prenom=fake.first_name(),
         date_naissance=fake.date_of_birth(minimum_age=1, maximum_age=90),
         genre=random.choice(["M", "F"]),
         adresse=fake.address(),
-        numero_securite_sociale=numero_secu,
+        numero_securite_sociale=s_numero_secu,
     )
-    patients.append(p)
+    liste_patients.append(o_patient)
 
-# Ajout groupé des patients dans la session
-session.add_all(patients)
+session.add_all(liste_patients)
 session.commit()
 
-# ================================================================================
-# 4. Association médecins ↔ établissements
-# ================================================================================
+# Vérification en base
+i_nb = session.query(Patient).count()
+assert i_nb == len(liste_patients), f"[ECHEC] Patients : attendu {len(liste_patients)}, trouvé {i_nb}"
+print(f"[OK] Patients insérés : {i_nb}")
 
-# Pour chaque médecin, création de 1 ou 2 affiliations à des établissements
-for medecin in medecins:
-    # Sélection aléatoire d'un ou deux établissements distincts
-    etabs_associes = random.sample(etablissements, k=random.randint(1, 2))
-    for etab in etabs_associes:
-        # Création d'un lien entre le médecin et l'établissement
-        lien = MedecinEtablissement(
-            id_medecin=medecin.id,
-            id_etablissement=etab.id,
+################################################################################
+# 4. ASSOCIATIONS MEDECIN ↔ ETABLISSEMENT
+################################################################################
+
+i_nb_liens = 0
+
+# Chaque médecin est affilié à 1 ou 2 établissements aléatoires
+for o_medecin in liste_medecins:
+    liste_etabs_associes = random.sample(liste_etablissements, k=random.randint(1, 2))
+    for o_etab in liste_etabs_associes:
+        o_lien = MedecinEtablissement(
+            id_medecin=o_medecin.id,
+            id_etablissement=o_etab.id,
         )
-        session.add(lien)
+        session.add(o_lien)
+        i_nb_liens += 1
 
 session.commit()
 
-# ================================================================================
-# 5. Génération des consultations
-# ================================================================================
+# Vérification en base
+i_nb = session.query(MedecinEtablissement).count()
+assert i_nb == i_nb_liens, f"[ECHEC] Affiliations : attendu {i_nb_liens}, trouvé {i_nb}"
+print(f"[OK] Affiliations médecin-établissement insérées : {i_nb}")
 
-# Liste des motifs de consultation possibles
-motifs = [
+################################################################################
+# 5. CONSULTATIONS
+################################################################################
+
+# Motifs de consultation possibles
+liste_motifs = [
     "Fièvre", "Douleur thoracique", "Contrôle annuel", "Toux persistante",
     "Maux de tête", "Fatigue", "Douleur abdominale", "Suivi traitement", "Bilan sanguin"
 ]
-consultations = []
 
-# Boucle de création de 400 consultations passées
+liste_consultations = []
+
+# 400 consultations dans les 5 dernières années
 for _ in range(400):
-    patient = random.choice(patients)
-    medecin = random.choice(medecins)
-    # Instanciation d'une consultation cohérente dans les 5 dernières années
-    c = Consultation(
+    o_patient = random.choice(liste_patients)
+    o_medecin = random.choice(liste_medecins)
+    o_consultation = Consultation(
         date_consultation=fake.date_time_between(start_date="-5y", end_date="now"),
-        motif=random.choice(motifs),
-        id_patient=patient.id,
-        id_medecin=medecin.id,
+        motif=random.choice(liste_motifs),
+        id_patient=o_patient.id,
+        id_medecin=o_medecin.id,
     )
-    consultations.append(c)
+    liste_consultations.append(o_consultation)
 
-# Ajout groupé des consultations dans la session
-session.add_all(consultations)
+session.add_all(liste_consultations)
 session.commit()
 
-# ================================================================================
-# 6. Génération des prescriptions
-# ================================================================================
+# Vérification en base
+i_nb = session.query(Consultation).count()
+assert i_nb == len(liste_consultations), f"[ECHEC] Consultations : attendu {len(liste_consultations)}, trouvé {i_nb}"
+print(f"[OK] Consultations insérées : {i_nb}")
 
-# Liste des descriptions de prescription possibles
-descriptions = [
+################################################################################
+# 6. PRESCRIPTIONS
+################################################################################
+
+# Descriptions de prescription possibles
+liste_descriptions = [
     "Paracétamol 500mg - 3 fois par jour pendant 5 jours",
     "Ibuprofène 400mg - 2 fois par jour pendant 7 jours",
     "Amoxicilline 1g - 2 fois par jour pendant 10 jours",
@@ -170,176 +211,181 @@ descriptions = [
     "Metformine 500mg - 2 fois par jour",
     "Doliprane 1g - selon la douleur",
 ]
-prescriptions = []
 
-for consultation in consultations:
-    # Tirage aléatoire pour décider si la consultation produit une prescription
+liste_prescriptions = []
+
+# 60% des consultations génèrent une prescription
+for o_consultation in liste_consultations:
     if random.random() < 0.6:
-        # Création de la prescription liée à la consultation
-        p = Prescription(
-            date=consultation.date_consultation.date(),
-            description=random.choice(descriptions),
-            id_consultation=consultation.id,
+        o_prescription = Prescription(
+            date=o_consultation.date_consultation.date(),
+            description=random.choice(liste_descriptions),
+            id_consultation=o_consultation.id,
         )
-        prescriptions.append(p)
+        liste_prescriptions.append(o_prescription)
 
-# Ajout groupé des prescriptions dans la session
-session.add_all(prescriptions)
+session.add_all(liste_prescriptions)
 session.commit()
 
-# ================================================================================
-# 7. Génération des rendez-vous
-# ================================================================================
+# Vérification en base
+i_nb = session.query(Prescription).count()
+assert i_nb == len(liste_prescriptions), f"[ECHEC] Prescriptions : attendu {len(liste_prescriptions)}, trouvé {i_nb}"
+print(f"[OK] Prescriptions insérées : {i_nb}")
 
-# Liste des statuts possibles pour les rendez-vous
-statuts_rdv = ["Planifié", "Effectué", "Annulé"]
-rendezvous = []
+################################################################################
+# 7. RENDEZ-VOUS
+################################################################################
 
-# Boucle de création de 300 rendez-vous répartis dans le passé et le futur
+# Statuts de rendez-vous possibles
+liste_statuts_rdv = ["Planifié", "Effectué", "Annulé"]
+
+liste_rendezvous = []
+
+# 300 rendez-vous entre -2 ans et +1 an (passé et futur)
 for _ in range(300):
-    patient = random.choice(patients)
-    medecin = random.choice(medecins)
-    etabs_medecin = [lien.etablissement for lien in medecin.etablissements]
-    etablissement = random.choice(etabs_medecin) if etabs_medecin else random.choice(etablissements) # Sélection d'un établissement cohérent avec le médecin ; fallback sur tous les établissements si besoin
-    # Création du rendez-vous avec une date entre -2 ans et +1 an
-    rdv = RendezVous(
+    o_patient = random.choice(liste_patients)
+    o_medecin = random.choice(liste_medecins)
+    # Sélection d'un établissement cohérent avec le médecin via ses affiliations
+    liste_etabs_medecin = [lien.etablissement for lien in o_medecin.etablissements]
+    o_etablissement = random.choice(liste_etabs_medecin) if liste_etabs_medecin else random.choice(liste_etablissements)
+    o_rdv = RendezVous(
         date_heure=fake.date_time_between(start_date="-2y", end_date="+1y"),
-        statut=random.choice(statuts_rdv),
-        id_patient=patient.id,
-        id_medecin=medecin.id,
-        id_etablissement=etablissement.id,
+        statut=random.choice(liste_statuts_rdv),
+        id_patient=o_patient.id,
+        id_medecin=o_medecin.id,
+        id_etablissement=o_etablissement.id,
     )
-    rendezvous.append(rdv)
+    liste_rendezvous.append(o_rdv)
 
-# Ajout groupé des rendez-vous dans la session
-session.add_all(rendezvous)
+session.add_all(liste_rendezvous)
 session.commit()
 
-# ================================================================================
-# 8. Génération des examens
-# ================================================================================
+# Vérification en base
+i_nb = session.query(RendezVous).count()
+assert i_nb == len(liste_rendezvous), f"[ECHEC] RendezVous : attendu {len(liste_rendezvous)}, trouvé {i_nb}"
+print(f"[OK] Rendez-vous insérés : {i_nb}")
 
-# Liste des types d'examen disponibles
-types_examen = [
+################################################################################
+# 8. EXAMENS
+################################################################################
+
+# Types d'examen disponibles
+liste_types_examen = [
     "Radiographie", "IRM", "Échographie", "Prise de sang",
     "Electrocardiogramme", "Scanner", "Audiogramme"
 ]
 
-# Liste des résultats possibles pour un examen
-resultats = [
+# Résultats possibles pour un examen
+liste_resultats = [
     "Normal", "Anomalie détectée", "En attente d'interprétation",
     "Résultat positif", "Résultat négatif"
 ]
 
-# Initialisation de la liste locale des examens
-examens = []
+liste_examens = []
 
-# Boucle de création de 250 examens
+# 250 examens dans les 5 dernières années
 for _ in range(250):
-    # Sélection aléatoire d'un patient
-    patient = random.choice(patients)
-    # Création d'un examen daté dans les 5 dernières années
-    e = Examen(
-        type_examen=random.choice(types_examen),
-        resultat=random.choice(resultats),
+    o_patient = random.choice(liste_patients)
+    o_examen = Examen(
+        type_examen=random.choice(liste_types_examen),
+        resultat=random.choice(liste_resultats),
         date=fake.date_between(start_date="-5y", end_date="today"),
-        id_patient=patient.id,
+        id_patient=o_patient.id,
     )
-    # Ajout de l'examen dans la liste locale
-    examens.append(e)
+    liste_examens.append(o_examen)
 
-# Ajout groupé des examens dans la session
-session.add_all(examens)
-# Validation de la transaction
+session.add_all(liste_examens)
 session.commit()
 
-# ================================================================================
-# 9. Génération des factures
-# ================================================================================
+# Vérification en base
+i_nb = session.query(Examen).count()
+assert i_nb == len(liste_examens), f"[ECHEC] Examens : attendu {len(liste_examens)}, trouvé {i_nb}"
+print(f"[OK] Examens insérés : {i_nb}")
 
-# Liste des statuts possibles pour les factures
-statuts_facture = ["Payée", "En attente", "Annulée"]
+################################################################################
+# 9. FACTURES
+################################################################################
 
-# Initialisation de la liste locale des factures
-factures = []
+# Statuts de facture possibles
+liste_statuts_facture = ["Payée", "En attente", "Annulée"]
 
-# Parcours des patients pour créer une facture pour une partie d'entre eux
-for patient in patients:
-    # Tirage aléatoire pour décider si le patient reçoit une facture
+liste_factures = []
+
+# 70% des patients reçoivent une facture
+for o_patient in liste_patients:
     if random.random() < 0.7:
-        # Création de la facture associée au patient
-        f = Facture(
+        o_facture = Facture(
             montant=round(random.uniform(20.0, 500.0), 2),
             date=fake.date_between(start_date="-2y", end_date="today"),
-            statut=random.choice(statuts_facture),
-            id_patient=patient.id,
+            statut=random.choice(liste_statuts_facture),
+            id_patient=o_patient.id,
         )
-        # Ajout de la facture dans la liste locale
-        factures.append(f)
+        liste_factures.append(o_facture)
 
-# Ajout groupé des factures dans la session
-session.add_all(factures)
+session.add_all(liste_factures)
 session.commit()
 
-# ================================================================================
-# 10. Génération des utilisateurs
-# ================================================================================
+# Vérification en base
+i_nb = session.query(Facture).count()
+assert i_nb == len(liste_factures), f"[ECHEC] Factures : attendu {len(liste_factures)}, trouvé {i_nb}"
+print(f"[OK] Factures insérées : {i_nb}")
 
-# Création du compte administrateur principal
-admin = Utilisateur(
+################################################################################
+# 10. UTILISATEURS
+################################################################################
+
+# Compte administrateur principal
+o_admin = Utilisateur(
     login="admin",
     mot_de_passe=fake.sha256(),
     role="Admin",
     medecin_id=None,
 )
+session.add(o_admin)
 
-# Ajout de l'administrateur dans la session
-session.add(admin)
-
-# Boucle de création de 3 comptes secrétaires
+# 3 comptes secrétaires
 for i in range(3):
-    # Création d'un compte secrétaire
-    secretaire = Utilisateur(
+    o_secretaire = Utilisateur(
         login=f"secretaire{i + 1}",
         mot_de_passe=fake.sha256(),
         role="Secretaire",
         medecin_id=None,
     )
-    # Ajout du compte secrétaire dans la session
-    session.add(secretaire)
+    session.add(o_secretaire)
 
-# Boucle de création d'un compte MedecinUser pour chaque médecin
-for medecin in medecins:
-    # Construction d'un login simple à partir du nom et de l'identifiant du médecin
-    login_medecin = f"dr.{medecin.nom.lower().replace(' ', '')}{medecin.id}"
-    # Création du compte utilisateur médecin
-    utilisateur_medecin = Utilisateur(
-        login=login_medecin,
+# Un compte MedecinUser par médecin
+for o_medecin in liste_medecins:
+    s_login = f"dr.{o_medecin.nom.lower().replace(' ', '')}{o_medecin.id}"
+    o_utilisateur = Utilisateur(
+        login=s_login,
         mot_de_passe=fake.sha256(),
         role="MedecinUser",
-        medecin_id=medecin.id,
+        medecin_id=o_medecin.id,
     )
-    # Ajout du compte utilisateur dans la session
-    session.add(utilisateur_medecin)
+    session.add(o_utilisateur)
 
-# Validation finale de la transaction
 session.commit()
 
-# ================================================================================
+# Vérification en base
+i_nb_attendu = 1 + 3 + len(liste_medecins)
+i_nb = session.query(Utilisateur).count()
+assert i_nb == i_nb_attendu, f"[ECHEC] Utilisateurs : attendu {i_nb_attendu}, trouvé {i_nb}"
+print(f"[OK] Utilisateurs insérés : {i_nb}")
+
+################################################################################
 # RECAPITULATIF FINAL
-# ================================================================================
+################################################################################
 
-# Affichage d'un récapitulatif des données insérées
-print("\\n=== Données insérées avec succès ===")
-print(f"Établissements : {len(etablissements)}")
-print(f"Médecins       : {len(medecins)}")
-print(f"Patients       : {len(patients)}")
-print(f"Consultations  : {len(consultations)}")
-print(f"Prescriptions  : {len(prescriptions)}")
-print(f"Rendez-vous    : {len(rendezvous)}")
-print(f"Examens        : {len(examens)}")
-print(f"Factures       : {len(factures)}")
-print(f"Utilisateurs   : {1 + 3 + len(medecins)}")
+print("\n=== Insertion terminée avec succès ===")
+print(f"  Etablissements   : {session.query(Etablissement).count()}")
+print(f"  Médecins         : {session.query(Medecin).count()}")
+print(f"  Patients         : {session.query(Patient).count()}")
+print(f"  Affiliations     : {session.query(MedecinEtablissement).count()}")
+print(f"  Consultations    : {session.query(Consultation).count()}")
+print(f"  Prescriptions    : {session.query(Prescription).count()}")
+print(f"  Rendez-vous      : {session.query(RendezVous).count()}")
+print(f"  Examens          : {session.query(Examen).count()}")
+print(f"  Factures         : {session.query(Facture).count()}")
+print(f"  Utilisateurs     : {session.query(Utilisateur).count()}")
 
-# Fermeture propre de la session
 session.close()

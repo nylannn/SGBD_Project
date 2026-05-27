@@ -1,3 +1,19 @@
+################################################################################
+##
+# @file model_rendezvous.py
+# @brief Modèle SQLAlchemy pour la table RENDEZVOUS
+#
+# @details
+# Définit la classe RendezVous et ses relations vers
+# Patient, Medecin et Etablissement.
+#
+# **Projet:** Projet SGBD - Centre Médical
+# **Formation:** Polytech Tours
+# **Auteur:** Leo NOUHOUANG
+# **Date:** Mai 2026
+#
+################################################################################
+
 # Importation de la base déclarative partagée
 from base import Base
 

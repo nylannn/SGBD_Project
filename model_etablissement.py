@@ -1,3 +1,19 @@
+################################################################################
+##
+# @file model_etablissement.py
+# @brief Modèle SQLAlchemy pour la table ETABLISSEMENT
+#
+# @details
+# Définit la classe Etablissement et ses relations vers
+# MedecinEtablissement et RendezVous.
+#
+# **Projet:** Projet SGBD - Centre Médical
+# **Formation:** Polytech Tours
+# **Auteur:** Leo NOUHOUANG
+# **Date:** Mai 2026
+#
+################################################################################
+
 # Importation de la base déclarative partagée
 from base import Base
 

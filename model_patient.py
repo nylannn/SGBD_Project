@@ -1,3 +1,19 @@
+################################################################################
+##
+# @file model_patient.py
+# @brief Modèle SQLAlchemy pour la table PATIENT
+#
+# @details
+# Définit la classe Patient avec une contrainte CHECK sur le genre
+# et ses relations vers Consultation, RendezVous, Examen et Facture.
+#
+# **Projet:** Projet SGBD - Centre Médical
+# **Formation:** Polytech Tours
+# **Auteur:** Leo NOUHOUANG
+# **Date:** Mai 2026
+#
+################################################################################
+
 # Importation de la base déclarative partagée
 from base import Base
 # Importation des types de colonnes nécessaires

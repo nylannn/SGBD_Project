@@ -1,3 +1,19 @@
+################################################################################
+##
+# @file model_facture.py
+# @brief Modèle SQLAlchemy pour la table FACTURE
+#
+# @details
+# Définit la classe Facture et sa relation vers Patient.
+# Une facture est toujours adressée à un patient.
+#
+# **Projet:** Projet SGBD - Centre Médical
+# **Formation:** Polytech Tours
+# **Auteur:** Leo NOUHOUANG
+# **Date:** Mai 2026
+#
+################################################################################
+
 # Importation de la base déclarative partagée
 from base import Base
 

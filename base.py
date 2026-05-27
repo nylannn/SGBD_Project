@@ -1,3 +1,19 @@
+################################################################################
+##
+# @file base.py
+# @brief Initialisation du moteur SQLAlchemy, de la session et de la base déclarative
+#
+# @details
+# Ce module est importé par tous les modèles et tous les scripts.
+# Il centralise la connexion à la base de données SQLite.
+#
+# **Projet:** Projet SGBD - Centre Médical
+# **Formation:** Polytech Tours
+# **Auteur:** Leo NOUHOUANG
+# **Date:** Mai 2026
+#
+################################################################################
+
 # Importation de declarative_base, create_engine et sessionmaker pour créer l'environnement de travail et la connexion avec la base de données
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine, text

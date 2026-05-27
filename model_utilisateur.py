@@ -1,3 +1,19 @@
+################################################################################
+##
+# @file model_utilisateur.py
+# @brief Modèle SQLAlchemy pour la table UTILISATEUR
+#
+# @details
+# Définit la classe Utilisateur avec une contrainte CHECK sur le rôle
+# et sa relation optionnelle vers Medecin (uniquement pour le rôle MedecinUser).
+#
+# **Projet:** Projet SGBD - Centre Médical
+# **Formation:** Polytech Tours
+# **Auteur:** Leo NOUHOUANG
+# **Date:** Mai 2026
+#
+################################################################################
+
 # Importation de la base déclarative partagée
 from base import Base
 

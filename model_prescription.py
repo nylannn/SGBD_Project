@@ -1,3 +1,19 @@
+################################################################################
+##
+# @file model_prescription.py
+# @brief Modèle SQLAlchemy pour la table PRESCRIPTION
+#
+# @details
+# Définit la classe Prescription et sa relation vers Consultation.
+# Une prescription est toujours issue d'une consultation.
+#
+# **Projet:** Projet SGBD - Centre Médical
+# **Formation:** Polytech Tours
+# **Auteur:** Leo NOUHOUANG
+# **Date:** Mai 2026
+#
+################################################################################
+
 # Importation de la base déclarative partagée
 from base import Base
 

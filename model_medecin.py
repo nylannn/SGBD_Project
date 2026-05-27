@@ -1,3 +1,19 @@
+################################################################################
+##
+# @file model_medecin.py
+# @brief Modèle SQLAlchemy pour la table MEDECIN
+#
+# @details
+# Définit la classe Medecin et ses relations vers
+# MedecinEtablissement, Consultation, RendezVous et Utilisateur.
+#
+# **Projet:** Projet SGBD - Centre Médical
+# **Formation:** Polytech Tours
+# **Auteur:** Leo NOUHOUANG
+# **Date:** Mai 2026
+#
+################################################################################
+
 # Importation de la base déclarative partagée
 from base import Base
 

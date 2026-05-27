@@ -1,3 +1,19 @@
+################################################################################
+##
+# @file model_medecin_etablissement.py
+# @brief Modèle SQLAlchemy pour la table d'association MEDECIN_ETABLISSEMENT
+#
+# @details
+# Gère la relation plusieurs-à-plusieurs entre Medecin et Etablissement.
+# La clé primaire est composite : (id_medecin, id_etablissement).
+#
+# **Projet:** Projet SGBD - Centre Médical
+# **Formation:** Polytech Tours
+# **Auteur:** Leo NOUHOUANG
+# **Date:** Mai 2026
+#
+################################################################################
+
 # Importation de la base déclarative partagée
 from base import Base
 
