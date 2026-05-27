@@ -1,10 +1,5 @@
 # Importation de declarative_base, create_engine et sessionmaker pour créer l'environnement de travail et la connexion avec la base de données
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
-
-from datetime import datetime, date
-
 from sqlalchemy import create_engine, text
 
 # 1. Bloc qui crée une base de donnée MySQL si elle n'existe pas

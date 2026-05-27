@@ -4,6 +4,7 @@ from base import Base, engine
 from model_etablissement import Etablissement
 from model_medecin import Medecin
 from model_patient import Patient
+from model_medecin_etablissement import MedecinEtablissement
 from model_consultation import Consultation
 from model_prescription import Prescription
 from model_rendezvous import RendezVous
