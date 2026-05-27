@@ -2,50 +2,52 @@
 ##
 # @file base.py
 # @brief Initialisation du moteur SQLAlchemy, de la session et de la base déclarative
+#        Version SQLite pour tests
 #
 # @details
 # Ce module est importé par tous les modèles et tous les scripts.
-# Il centralise la connexion à la base de données SQLite.
+# Il centralise la connexion à la base de données SQLite du centre médical.
 #
 # **Projet:** Projet SGBD - Centre Médical
 # **Formation:** Polytech Tours
-# **Auteur:** Leo NOUHOUANG
+# **Auteur:** Leo NOUHOUANG - Mohamed Yassine BEN ABDA
 # **Date:** Mai 2026
 #
 ################################################################################
 
-# Importation de declarative_base, create_engine et sessionmaker pour créer l'environnement de travail et la connexion avec la base de données
-from sqlalchemy.orm import sessionmaker
+import os
 from sqlalchemy import create_engine, text
+from sqlalchemy.orm import declarative_base, sessionmaker
 
-# 1. Bloc qui crée une base de donnée MySQL si elle n'existe pas
-engine_init = create_engine("mysql+pymysql://userB24:motdepasseB5um6@dockerepu1.pedagogie.sandbox.univ-tours.fr:32769/")
+# PARAMETRES DE CONNEXION (SQLite)
+
+# Nom du fichier de base de données SQLite
+S_DB_NAME = "centre_medical.db"
+
+# Connexion SQLite (fichier local)
+S_DB_URL = f"sqlite:///{S_DB_NAME}"
+
+if os.path.exists(S_DB_NAME):
+    os.remove(S_DB_NAME)
 
 
-db_name = "centre_medical"
+# Moteur de connexion vers la base cible
+engine = create_engine(S_DB_URL, echo=False, future=True)
 
-with engine_init.connect() as conn:
-    result = conn.execute(
-        text("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = :db"), {"db": db_name}).fetchone()
+# Activation des clés étrangères à chaque connexion (SQLite)
+event.listen(engine, "connect",
+    lambda dbapi_conn, conn_record: dbapi_conn.execute("PRAGMA foreign_keys=1"))
 
-    if result:
-        print(f"La base de données '{db_name}' existe déjà.")
-    else:
-        conn.execute(text(f"CREATE DATABASE `{db_name}`"))
-        print(f"Base de données '{db_name}' créée avec succès.")
-
-# 2. Connexion avec la base cible
-engine = create_engine(f"mysql+pymysql://userB24:motdepasseB5um6@dockerepu1.pedagogie.sandbox.univ-tours.fr:32769/{db_name}", echo=False)
-
-# 3. verification de la connexion
+# Vérification de la connexion au démarrage
 try:
     with engine.connect() as conn:
-        conn.execute(text("SELECT 1"))
-        print("Connexion réussie")
+        result = conn.execute("SELECT 1")
+        result.scalar()
+    print("[OK] Connexion réussie à SQLite.")
 except Exception as e:
-    print(f"Échec de la connexion : {e}")
+    print(f"[ECHEC] Connexion impossible : {e}")
 
 
-### Création de la session
-Session = sessionmaker(bind=engine)
+Base = declarative_base()
+Session = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 session = Session()
