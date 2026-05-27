@@ -1,17 +1,15 @@
-# Importation de la base déclarative et du moteur définis dans base.py
 from base import Base, engine
 
-# Importation de tous les modèles pour que SQLAlchemy les enregistre avant la création des tables
-from models import (
-    Etablissement,
-    Medecin,
-    Patient,
-    MedecinEtablissement,
-    Consultation,
-    Prescription,
-    RendezVous,
-    Examen,
-    Facture,
-    Utilisateur,
-)
+# Import de chaque modèle pour que SQLAlchemy les enregistre
+from model_etablissement import Etablissement
+from model_medecin import Medecin
+from model_patient import Patient
+from model_consultation import Consultation
+from model_prescription import Prescription
+from model_rendezvous import RendezVous
+from model_examen import Examen
+from model_facture import Facture
+from model_utilisateur import Utilisateur
+
+# Création de toutes les tables dans le bon ordre
 Base.metadata.create_all(engine)
