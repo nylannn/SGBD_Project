@@ -1,17 +1,34 @@
 ################################################################################
-# PARTIE 4
+##
+# @file visualisation.py
+# @brief Extraction des données et exportation des résultats en CSV
+#
+# @details
+# Ce module exécute des requêtes SQLAlchemy afin d'extraire les données
+# nécessaires à l'analyse du centre médical, puis les exporte dans des fichiers CSV.
+#
+# **Projet:** Projet SGBD - Centre Médical
+# **Formation:** Polytech Tours
+# **Auteur:** Leo NOUHOUANG
+# **Date:** Mai 2026
+#
 ################################################################################
+
 import csv
 
 from sqlalchemy import select, func, extract
 from base import session
 
-from model_medecin import Medecin
-from model_consultation import Consultation
 from model_etablissement import Etablissement
-from model_rendezvous import RendezVous
+from model_medecin import Medecin
 from model_patient import Patient
-
+from model_medecin_etablissement import MedecinEtablissement
+from model_consultation import Consultation
+from model_prescription import Prescription
+from model_rendezvous import RendezVous
+from model_examen import Examen
+from model_facture import Facture
+from model_utilisateur import Utilisateur
 
 def export_csv(rows, filename, headers):
     with open(filename, mode="w", newline="", encoding="utf-8") as f:
@@ -21,6 +38,11 @@ def export_csv(rows, filename, headers):
 
 
 def run():
+    
+    ################################################################################
+    # Analyser la surcharge des médecins
+    ################################################################################
+    
     consultations_par_medecin = session.execute(
         select(
             Medecin.id.label("id_medecin"),
@@ -39,6 +61,12 @@ def run():
         .order_by(Medecin.nom, Medecin.prenom)
     ).all()
 
+    print("[OK] Nombre de consultations par médecin et par année extraites.")
+    
+    ################################################################################
+    # Identifier les établissements les plus fréquentés par année
+    ################################################################################
+    
     rendezvous_par_etablissement = session.execute(
         select(
             Etablissement.id.label("id_etablissement"),
@@ -54,7 +82,13 @@ def run():
         )
         .order_by(Etablissement.nom)
     ).all()
+    
+    print("[OK] Nombre de rendez-vous par établissement et par année extraites.")
 
+    ################################################################################
+    # Analyser le nombre de consultations par patient sur les 5 dernières années
+    ################################################################################
+    
     consultations_par_patient = session.execute(
         select(
             Patient.id.label("id_patient"),
@@ -68,24 +102,38 @@ def run():
         .order_by(func.count(Consultation.id).desc())
     ).all()
 
+    print("[OK] Nombre de consultations par patient sur les 5 dernières années extraites.")
+    
+    ################################################################################
+    # Exportation des données dans des fichiers CSV
+    ################################################################################
+    
     export_csv(
         consultations_par_medecin,
         "consultations_par_medecin_et_annee.csv",
         ["id_medecin", "nom_medecin", "prenom_medecin", "annee", "nb_consultations"]
     )
+    print("\n[OK] Export consultations_par_medecin_et_annee.csv réussi")
 
     export_csv(
         rendezvous_par_etablissement,
         "rendezvous_par_etablissement_et_annee.csv",
         ["id_etablissement", "nom_etablissement", "annee", "nb_rendezvous"]
     )
+    print("[OK] Export rendezvous_par_etablissement_et_annee.csv réussi.")
 
     export_csv(
         consultations_par_patient,
         "consultations_par_patient_5_ans.csv",
         ["id_patient", "nom_patient", "prenom_patient", "nb_consultations"]
     )
-
+    print("[OK] Export consultations_par_patient_5_ans.csv réussi.")
+    
+    ################################################################################
+    # RECAPITULATIF FINAL
+    ################################################################################
+    
+    print("\n[OK] Extraction des requête SQL terminé.")
     print("[OK] Export CSV terminé.")
 
 

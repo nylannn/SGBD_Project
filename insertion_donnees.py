@@ -28,6 +28,7 @@
 ################################################################################
 
 from base import Base, engine, session
+from sqlalchemy import select, func
 
 from model_etablissement import Etablissement
 from model_medecin import Medecin
