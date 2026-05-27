@@ -43,6 +43,12 @@ from model_utilisateur import Utilisateur
 from faker import Faker
 import random
 
+def count_rows(model):
+    return session.execute(select(func.count()).select_from(model)).scalar()
+
+def first_patient():
+    return session.execute(select(Patient)).first()
+
 def run():
         
     # Initialisation du générateur Faker avec la locale française
@@ -56,7 +62,7 @@ def run():
     Base.metadata.create_all(engine)
     
     # Vérification préalable : on évite de réinsérer si la base contient déjà des données
-    if session.query(Patient).first() is not None:
+    if first_patient() is not None:
         print("La base contient déjà des données. Supprimez centre_medical.db avant de relancer.")
         session.close()
         raise SystemExit
@@ -83,7 +89,7 @@ def run():
     session.commit()
     
     # Vérification en base
-    i_nb = session.query(Etablissement).count()
+    i_nb = count_rows(Etablissement)
     assert i_nb == len(liste_etablissements), f"[ECHEC] Etablissements : attendu {len(liste_etablissements)}, trouvé {i_nb}"
     print(f"[OK] Etablissements insérés : {i_nb}")
     
@@ -112,7 +118,7 @@ def run():
     session.commit()
     
     # Vérification en base
-    i_nb = session.query(Medecin).count()
+    i_nb = count_rows(Medecin)
     assert i_nb == len(liste_medecins), f"[ECHEC] Medecins : attendu {len(liste_medecins)}, trouvé {i_nb}"
     print(f"[OK] Médecins insérés : {i_nb}")
     
@@ -139,7 +145,7 @@ def run():
     session.commit()
     
     # Vérification en base
-    i_nb = session.query(Patient).count()
+    i_nb = count_rows(Patient)
     assert i_nb == len(liste_patients), f"[ECHEC] Patients : attendu {len(liste_patients)}, trouvé {i_nb}"
     print(f"[OK] Patients insérés : {i_nb}")
     
@@ -163,7 +169,7 @@ def run():
     session.commit()
     
     # Vérification en base
-    i_nb = session.query(MedecinEtablissement).count()
+    i_nb = count_rows(MedecinEtablissement)
     assert i_nb == i_nb_liens, f"[ECHEC] Affiliations : attendu {i_nb_liens}, trouvé {i_nb}"
     print(f"[OK] Affiliations médecin-établissement insérées : {i_nb}")
     
@@ -195,7 +201,7 @@ def run():
     session.commit()
     
     # Vérification en base
-    i_nb = session.query(Consultation).count()
+    i_nb = count_rows(Consultation)
     assert i_nb == len(liste_consultations), f"[ECHEC] Consultations : attendu {len(liste_consultations)}, trouvé {i_nb}"
     print(f"[OK] Consultations insérées : {i_nb}")
     
@@ -230,7 +236,7 @@ def run():
     session.commit()
     
     # Vérification en base
-    i_nb = session.query(Prescription).count()
+    i_nb = count_rows(Prescription)
     assert i_nb == len(liste_prescriptions), f"[ECHEC] Prescriptions : attendu {len(liste_prescriptions)}, trouvé {i_nb}"
     print(f"[OK] Prescriptions insérées : {i_nb}")
     
@@ -263,7 +269,7 @@ def run():
     session.commit()
     
     # Vérification en base
-    i_nb = session.query(RendezVous).count()
+    i_nb = count_rows(RendezVous)
     assert i_nb == len(liste_rendezvous), f"[ECHEC] RendezVous : attendu {len(liste_rendezvous)}, trouvé {i_nb}"
     print(f"[OK] Rendez-vous insérés : {i_nb}")
     
@@ -300,7 +306,7 @@ def run():
     session.commit()
     
     # Vérification en base
-    i_nb = session.query(Examen).count()
+    i_nb = count_rows(Examen)
     assert i_nb == len(liste_examens), f"[ECHEC] Examens : attendu {len(liste_examens)}, trouvé {i_nb}"
     print(f"[OK] Examens insérés : {i_nb}")
     
@@ -328,7 +334,7 @@ def run():
     session.commit()
     
     # Vérification en base
-    i_nb = session.query(Facture).count()
+    i_nb = count_rows(Facture)
     assert i_nb == len(liste_factures), f"[ECHEC] Factures : attendu {len(liste_factures)}, trouvé {i_nb}"
     print(f"[OK] Factures insérées : {i_nb}")
     
@@ -370,7 +376,7 @@ def run():
     
     # Vérification en base
     i_nb_attendu = 1 + 3 + len(liste_medecins)
-    i_nb = session.query(Utilisateur).count()
+    i_nb = count_rows(Utilisateur)
     assert i_nb == i_nb_attendu, f"[ECHEC] Utilisateurs : attendu {i_nb_attendu}, trouvé {i_nb}"
     print(f"[OK] Utilisateurs insérés : {i_nb}")
     
@@ -379,16 +385,16 @@ def run():
     ################################################################################
     
     print("\n=== Insertion terminée avec succès ===")
-    print(f"  Etablissements   : {session.query(Etablissement).count()}")
-    print(f"  Médecins         : {session.query(Medecin).count()}")
-    print(f"  Patients         : {session.query(Patient).count()}")
-    print(f"  Affiliations     : {session.query(MedecinEtablissement).count()}")
-    print(f"  Consultations    : {session.query(Consultation).count()}")
-    print(f"  Prescriptions    : {session.query(Prescription).count()}")
-    print(f"  Rendez-vous      : {session.query(RendezVous).count()}")
-    print(f"  Examens          : {session.query(Examen).count()}")
-    print(f"  Factures         : {session.query(Facture).count()}")
-    print(f"  Utilisateurs     : {session.query(Utilisateur).count()}")
+    print(f"  Etablissements   : {count_rows(Etablissement)}")
+    print(f"  Médecins         : {count_rows(Medecin)}")
+    print(f"  Patients         : {count_rows(Patient)}")
+    print(f"  Affiliations     : {count_rows(MedecinEtablissement)}")
+    print(f"  Consultations    : {count_rows(Consultation)}")
+    print(f"  Prescriptions    : {count_rows(Prescription)}")
+    print(f"  Rendez-vous      : {count_rows(RendezVous)}")
+    print(f"  Examens          : {count_rows(Examen)}")
+    print(f"  Factures         : {count_rows(Facture)}")
+    print(f"  Utilisateurs     : {count_rows(Utilisateur)}")
     
     session.close()
 
