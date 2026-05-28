@@ -9,7 +9,7 @@
 #
 # **Projet:** Projet SGBD - Centre Médical
 # **Formation:** Polytech Tours
-# **Auteur:** Leo NOUHOUANG
+# **Auteur:** Leo NOUHOUANG - Mohamed Yassine BEN ABDA
 # **Date:** Mai 2026
 #
 ################################################################################

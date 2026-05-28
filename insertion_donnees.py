@@ -4,13 +4,12 @@
 # @brief Génération et insertion des données dans la base de données
 #
 # @details
-# Ce module génère des données fictives à l'aide de la librairie Faker
-# et les insère dans la base de données SQLite du centre médical.
+# Ce module génère des données fictives à l'aide de la librairie Faker et les insère dans la base de données SQLite du centre médical.
 # Les insertions sont vérifiées après chaque bloc via des assertions.
 #
 # **Projet:** Projet SGBD - Centre Médical
 # **Formation:** Polytech Tours
-# **Auteur:** Leo NOUHOUANG
+# **Auteur:** Leo NOUHOUANG - Mohamed Yassine BEN ABDA
 # **Date:** Mai 2026
 #
 # @section order_sec Ordre d'insertion

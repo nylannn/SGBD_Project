@@ -1,7 +1,7 @@
 ################################################################################
 ##
 # @file creation_graphe.py
-# @brief Création des graphiques à partir des CSV générés par la partie 4
+# @brief Création des graphiques à partir des CSV générés par la partie 4 (visualisation_CSV.py)
 #
 # @details
 # Ce module lit les fichiers CSV extraits de la base de données
@@ -9,7 +9,7 @@
 #
 # **Projet:** Projet SGBD - Centre Médical
 # **Formation:** Polytech Tours
-# **Auteur:** Leo NOUHOUANG
+# **Auteur:** Leo NOUHOUANG - Mohamed Yassine BEN ABDA
 # **Date:** Mai 2026
 #
 ################################################################################

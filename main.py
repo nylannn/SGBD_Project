@@ -1,31 +1,31 @@
 ################################################################################
 ##
 # @file main.py
-# @brief Point d'entrée principal du projet SGBD - Centre Médical
+# @brief Point d'entrÃ©e principal du projet SGBD - Centre MÃ©dical
 #
 # @details
-# Ce module centralise l'exécution des différentes parties du projet :
-# création et insertion des données, extraction des données et création des graphiques.
+# Ce module centralise l'exÃ©cution des diffÃ©rentes parties du projet :
+# crÃ©ation et insertion des donnÃ©es, extraction des donnÃ©es et crÃ©ation des graphiques.
 #
-# **Projet:** Projet SGBD - Centre Médical
+# **Projet:** Projet SGBD - Centre MÃ©dical
 # **Formation:** Polytech Tours
-# **Auteur:** Leo NOUHOUANG
+# **Auteur:** Leo NOUHOUANG - Mohamed Yassine BEN ABDA
 # **Date:** Mai 2026
 #
 ################################################################################
 
 def main():
-    print("=== Projet SGBD - Centre Médical ===")
+    print("=== Projet SGBD - Centre MÃ©dical ===")
 
-    print("\n[1/3] Création de la base et insertion des données...")
+    print("\n[1/3] CrÃ©ation de la base et insertion des donnÃ©es...")
     import insertion_donnees as insertion_donnees
     insertion_donnees.run()
 
-    print("\n[2/3] Extraction des données et export CSV...")
+    print("\n[2/3] Extraction des donnÃ©es et export CSV...")
     import visualisation_CSV as partie4
     partie4.run()
 
-    print("\n[3/3] Création des graphiques...")
+    print("\n[3/3] CrÃ©ation des graphiques...")
     import creation_graphe as partie5
     partie5.run()
 
